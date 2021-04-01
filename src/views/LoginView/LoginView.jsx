@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -7,7 +7,9 @@ import authOperations from "../../redux/auth/auth-operations";
 
 import styles from "./LoginView.module.css";
 
-function LoginView({ onSubmit }) {
+
+export default function LoginView() {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -28,7 +30,7 @@ function LoginView({ onSubmit }) {
     evt.preventDefault();
     const user = { email, password };
 
-    onSubmit(user);
+    dispatch(authOperations.loginUser(user))
     setEmail("");
     setPassword("");
   }
@@ -74,8 +76,3 @@ LoginView.propTypes = {
   onSubmit: PropTypes.func,
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  onSubmit: (user) => dispatch(authOperations.loginUser(user)),
-});
-
-export default connect(null, mapDispatchToProps)(LoginView);

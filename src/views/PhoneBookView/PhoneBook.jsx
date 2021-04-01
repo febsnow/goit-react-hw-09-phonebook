@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { CSSTransition } from "react-transition-group";
 import PropTypes from "prop-types";
 import Section from "../../сomponents/Section/Section";
@@ -20,10 +20,20 @@ import styles from "../../сomponents/Section/Section.module.css";
 import * as logo from "../../сomponents/Logo/Logo.module.css";
 import "./PhoneBook.css";
 
-function PhoneBook({ items, isLoading, fetchContacts }) {
+
+
+export default function PhoneBook() {
+  const dispatch = useDispatch();
+  const isLoading = useSelector(isContactsLoading);
+  const items = useSelector(getAllContacts)
+  
   useEffect(() => {
+    function fetchContacts() {
+      dispatch(operations.fetchContacts())
+    };
+
     fetchContacts();
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
@@ -92,21 +102,10 @@ function PhoneBook({ items, isLoading, fetchContacts }) {
 }
 
 PhoneBook.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  items: PropTypes.arrayOf(PropTypes.object),
   isLoading: PropTypes.bool,
   fetchContacts: PropTypes.func,
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  fetchContacts: () => dispatch(operations.fetchContacts()),
-});
 
-const mapStateToProps = (state) => {
-  return {
-    items: getAllContacts(state),
-    isLoading: isContactsLoading(state),
-    // error: getError(state),
-  };
-};
 
-export default connect(mapStateToProps, mapDispatchToProps)(PhoneBook);

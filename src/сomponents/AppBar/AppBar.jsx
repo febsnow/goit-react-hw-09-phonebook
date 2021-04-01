@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import Navigation from "../Navigation/Navigation";
 import authSelectors from "../../redux/auth/auth-selectors";
 import UserMenu from "../UserMenu/UserMenu";
@@ -15,7 +15,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function TopBar({ isLoggedIn }) {
+export default function TopBar() {
+  const isLoggedIn = useSelector(authSelectors.getAuthorised)
   const classes = useStyles();
 
   return (
@@ -30,8 +31,3 @@ function TopBar({ isLoggedIn }) {
   );
 }
 
-const mapStateToProps = (state) => ({
-  isLoggedIn: authSelectors.getAuthorised(state),
-});
-
-export default connect(mapStateToProps)(TopBar);

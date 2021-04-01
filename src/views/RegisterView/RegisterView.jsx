@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import authOperations from "../../redux/auth/auth-operations";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
 import styles from "./RegisterView.module.css";
 
-function RegisterView({ onSubmit }) {
+
+export default function RegisterView() {
+  const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,17 +28,17 @@ function RegisterView({ onSubmit }) {
         return;
     }
   }
-  //   this.setState({ [e.target.name]: e.target.value });
-  // };
 
   const submitHandler = (evt) => {
     evt.preventDefault();
+
     const user = {
       name,
       email,
       password,
     };
-    onSubmit(user);
+
+    dispatch(authOperations.registerUser(user))
     setName("");
     setEmail("");
     setPassword("");
@@ -93,14 +95,3 @@ function RegisterView({ onSubmit }) {
   );
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  onSubmit: (newUser) => {
-    dispatch(authOperations.registerUser(newUser));
-  },
-});
-
-// const mapDispatchToProps = {
-//   onSubmit: operations.registerUser
-// };
-
-export default connect(null, mapDispatchToProps)(RegisterView);

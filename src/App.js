@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect } from "react";
 import { Switch } from "react-router";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Flip, ToastContainer } from "react-toastify";
 
 import TopBar from "./сomponents/AppBar/AppBar";
@@ -15,14 +15,17 @@ const RegisterView = lazy(() => import("./views/RegisterView/RegisterView"));
 const LoginView = lazy(() => import("./views/LoginView/LoginView"));
 const PhoneBookView = lazy(() => import("./views/PhoneBookView/PhoneBook"));
 
-function App({ onGetCurrentUser, isLoading }) {
+export default function App() {
+  const dispatch = useDispatch();
+  // const isLoading = useSelector(authSelectors.isLoading);
+
   useEffect(() => {
-    onGetCurrentUser();
-  }, [onGetCurrentUser]);
+    dispatch(authOperations.getCurrentUser());
+  }, [dispatch]);
 
   return (
     <>
-      {isLoading && <Preloader />}
+      {/* {isLoading && <Preloader />} */}
       <ToastContainer
         transition={Flip}
         autoClose={2000}
@@ -35,30 +38,11 @@ function App({ onGetCurrentUser, isLoading }) {
       <Suspense fallback={<Preloader />}>
         <Switch>
           <PublicRoute path="/" exact component={HomeView} />
-          <PublicRoute
-            path="/login"
-            restricted
-            redirectTo="/phonebook"
-            component={LoginView}
-          />
-          <PublicRoute
-            path="/register"
-            restricted
-            redirectTo="/"
-            component={RegisterView}
-          />
+          <PublicRoute path="/login" restricted redirectTo="/phonebook" component={LoginView} />
+          <PublicRoute path="/register" restricted redirectTo="/" component={RegisterView} />
           <PrivateRoute path="/phonebook" component={PhoneBookView} />
         </Switch>
       </Suspense>
     </>
   );
 }
-
-const mapStateToProps = (state) => ({
-  isLoading: authSelectors.isLoading(state),
-});
-const mapDispatchToProps = (dispatch) => ({
-  onGetCurrentUser: () => dispatch(authOperations.getCurrentUser()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);

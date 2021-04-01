@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import operations from "../../redux/contacts/contacts-operations";
 import {
   getAllContacts,
@@ -17,20 +17,23 @@ import "react-toastify/dist/ReactToastify.css";
 import styles from "./AddContactForm.module.css";
 import contactsActions from "../../redux/contacts/contacts-actions";
 
-function AddContactForm({
-  contactToEdit,
-  items,
-  onSubmit,
-  isEditMode,
-  onExitEdit,
-}) {
+
+export default function AddContactForm() {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
 
+  const items = useSelector(getAllContacts);
+  const contactIsEditing = useSelector(contactToEdit);
+  const editMode = useSelector(isEditMode)
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    setName(contactToEdit.name);
-    setNumber(contactToEdit.number);
-  }, [contactToEdit.name, contactToEdit.number]);
+    setName(contactIsEditing.name);
+    setNumber(contactIsEditing.number);
+  }, [contactIsEditing.name, contactIsEditing.number]);
+
+  const onExitEdit = () => dispatch(contactsActions.exitEditMode());
 
   function changeHandler(e) {
     switch (e.target.name) {
@@ -52,7 +55,7 @@ function AddContactForm({
       items.find(
         (contact) =>
           contact.name.toLowerCase() === name.toLowerCase() &&
-          contact.id !== contactToEdit.id
+          contact.id !== contactIsEditing.id
       )
     ) {
       return toast.error(`${name} already exist`);
@@ -61,13 +64,18 @@ function AddContactForm({
     const contact = {
       name,
       number,
-      id: contactToEdit.id || null,
+      id: contactIsEditing.id || null,
     };
 
-    onSubmit(contact);
+    if (contact.id) {
+      return dispatch(operations.editContact(contact));
+    }
+    dispatch(operations.addContact(contact));
+    
     setName("");
     setNumber("");
-  };
+  }
+  
 
   return (
     <>
@@ -98,7 +106,7 @@ function AddContactForm({
           required
           onChange={changeHandler}
         />
-        {isEditMode ? (
+        {editMode ? (
           <>
             <Button
               variant="contained"
@@ -115,7 +123,7 @@ function AddContactForm({
               startIcon={<CloseIcon />}
               type="button"
               size="small"
-              onClick={() => onExitEdit()}
+              onClick={onExitEdit}
             >
               Discard changes
             </Button>
@@ -136,22 +144,5 @@ function AddContactForm({
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    items: getAllContacts(state),
-    contactToEdit: contactToEdit(state),
-    isEditMode: isEditMode(state),
-  };
-};
 
-const mapDispatchToProps = (dispatch) => ({
-  onSubmit: (contact) => {
-    if (contact.id) {
-      return dispatch(operations.editContact(contact));
-    }
-    dispatch(operations.addContact(contact));
-  },
-  onExitEdit: () => dispatch(contactsActions.exitEditMode()),
-});
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddContactForm);
