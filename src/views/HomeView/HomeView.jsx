@@ -1,11 +1,12 @@
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import authSelectors from "../../redux/auth/auth-selectors";
 
-function HomeView({ isAuthorised }) {
+export default function HomeView() {
+const isLoggedIn = useSelector(authSelectors.getAuthorised)
   return (
     <div style={{ textAlign: "center" }}>
       <h1>Phonebook aplication</h1>
-      {isAuthorised ? (
+      {isLoggedIn ? (
         <p>Now you are free to work with PhoneBook</p>
       ) : (
         <p>Please register or login to get access to PhoneBook</p>
@@ -14,8 +15,5 @@ function HomeView({ isAuthorised }) {
   );
 }
 
-const mapStateToProps = (state) => ({
-  isAuthorised: authSelectors.getAuthorised(state),
-});
 
-export default connect(mapStateToProps)(HomeView);
+
