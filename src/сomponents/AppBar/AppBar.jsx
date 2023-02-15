@@ -16,12 +16,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function TopBar() {
-  const isLoggedIn = useSelector(authSelectors.getAuthorised)
+  const isLoggedIn = useSelector(authSelectors.getAuthorised);
   const classes = useStyles();
 
   return (
     <header className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="relative">
         <Toolbar style={{ width: "80%", margin: "0 auto" }} variant="dense">
           <Navigation />
           {isLoggedIn ? <UserMenu /> : <LoginMenu />}
@@ -30,4 +30,3 @@ export default function TopBar() {
     </header>
   );
 }
-
